@@ -23,7 +23,9 @@
           enter-active-class="animated bounceInUp"
           leave-active-class="animated bounceOutDown"
         >
-          <li v-for="data in skills" :key="data.id">{{data.skill}}</li>
+          <li v-for="data in skills" :key="data.id">{{data.skill}}
+            <i class="fa fa-minus-circle" v-on:click="remove(data.id)"></i>
+          </li>
         </transition-group>
       </ul>
 
@@ -58,6 +60,12 @@ export default {
           this.skill = "";
         }
       });
+    },
+    remove(id){
+      let index = this.skills.findIndex(s=>s.id === id);
+      if(index!=-1){
+        this.skills.splice(index,1);
+      }
     }
   }
 };
