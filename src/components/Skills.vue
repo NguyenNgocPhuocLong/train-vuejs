@@ -24,7 +24,7 @@
           leave-active-class="animated bounceOutDown"
         >
           <li v-for="data in skills" :key="data.id">
-            {{data.skill}}
+            <router-link :to="{name:'about',params:{name: data.skill }}">{{data.skill}}</router-link>
             <i class="fa fa-minus-circle float-right" v-on:click="remove(data.id)"></i>
           </li>
         </transition-group>
@@ -44,10 +44,7 @@ export default {
   data() {
     return {
       skill: "",
-      skills: [
-        { id: 0, skill: "Vue.js" },
-        { id: 1, skill: "Fontend Developer" }
-      ]
+      skills: [{ id: 0, skill: "Vue.js" }]
     };
   },
   methods: {
