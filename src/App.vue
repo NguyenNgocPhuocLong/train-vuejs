@@ -17,6 +17,7 @@ export default {
 
 <style>
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,700");
+@import "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css";
 body {
   background-color: #eeeeee;
   font-family: "Montserrat", sans-serif;
@@ -43,6 +44,11 @@ nav a {
   font-weight: bold;
   margin-right: 15px;
 }
+
+.float-right {
+  float: right;
+}
+
 #app {
   width: 50%;
 }
