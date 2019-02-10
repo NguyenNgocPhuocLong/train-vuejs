@@ -47,6 +47,16 @@ export default {
       skills: [{ id: 0, skill: "Vue.js" }]
     };
   },
+  created() {
+    var item = localStorage.getItem("listLanguageDev");
+    if (item) {
+      try {
+        this.skills = JSON.parse(item);
+      } catch (e) {
+        localStorage.removeItem("listLanguageDev");
+      }
+    }
+  },
   methods: {
     changeName() {
       this.name = "Long ";
@@ -56,6 +66,7 @@ export default {
         if (result) {
           this.skills.push({ id: this.skills.length + 1, skill: this.skill });
           this.skill = "";
+          this.storeData();
         }
       });
     },
@@ -63,7 +74,16 @@ export default {
       let index = this.skills.findIndex(s => s.id === id);
       if (index != -1) {
         this.skills.splice(index, 1);
+        this.storeData();
       }
+    },
+    storeData() {
+      var item = localStorage.getItem("listLanguageDev");
+      if (item) {
+        localStorage.removeItem("listLanguageDev");
+      }
+      const parsed = JSON.stringify(this.skills);
+      localStorage.setItem("listLanguageDev", parsed);
     }
   }
 };
