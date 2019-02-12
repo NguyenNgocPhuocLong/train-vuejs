@@ -1,0 +1,234 @@
+<div class="eee">
+    <div class="cg_tieude_contact">{{"selectLanguage"| translate}}</div>
+    <ul class="cg_list_language" *ngIf="!edit">
+        <li *ngFor="let lang of languages;let i=index" [ngClass]="{cg_chon_ok: lang == curLang}" (click)="convertLanguage(lang);">
+            <input type="hidden" value="{{lang}}">
+            <span class="cg_icon_luachon"></span>
+            <img src="{{this.server.linkLang}}language/{{lang}}.png" width="90" height="50">
+        </li>
+    </ul>
+    <div class="cg_tieude_contact">
+        <h3>{{"table.table" | translate}} {{"header.menu.contacts" | translate}}</h3>
+    </div>
+    <ba-card cardTitle="Basic Example" baCardClass="with-scroll" class="smart-table-container">
+
+        <div>
+            <div class="top-30">
+                <button class="cg_btn_add pull-left" (click)="edit = true;initForm(contact);">{{"button.create"| translate}}</button>
+                <div class="right padding-0 col-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" [(ngModel)]="search" placeholder='{{"search.byname"| translate}}' aria-describedby="basic-addon2"
+                            (ngModelChange)="Search(search)">
+                        <!--<span class="input-group-addon" id="basic-addon2">{{"paging.search"|translate}}</span>-->
+                    </div>
+                </div>
+
+            </div>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>{{"table.language"| translate}}</th>
+                        <th>{{"table.image"| translate}}</th>
+                        <th>{{"table.phone"| translate}}</th>
+                        <th>{{"table.address"| translate}}</th>
+                        <th>{{"contactpage.open"| translate}}</th>
+                        <th>Goog Map</th>
+                        <th>{{"table.action"| translate}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr [hidden]="listCurrent.length >0">
+                        <td colspan="7">{{"table.nodata"| translate}}</td>
+                    </tr>
+                    <tr *ngFor="let item of listCurrent; let i=index">
+                        <td>{{item.Language}}</td>
+                        <td>
+                            <div *ngIf="item.Image.ImageName != null && item.Image.ImageName!= ''">
+                                <img src="{{this.server.urlImage +(item.Image.ImageType==0?'/': this.server.imageType[item.Image.ImageType] +'/') + item.Image.ImageName}}"
+                                    height="200" width="200" />
+                            </div>
+                        </td>
+                        <td>{{item.Phone}}</td>
+                        <td>{{item.Address}}</td>
+                        <td [innerHtml]="item.BusinessHours" class="text-left"></td>
+                        <td>
+                            <button class="cg_btn_capnhat" data-toggle="modal" data-target="#firstModal" (click)="trustSrcUrl(item.MapUrl)">{{"button.show"| translate}}</button>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-success" (click)="Edit(item)" title='{{"button.edit" | translate}}'>
+                                <i class="ion-compose"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger btn-bottom-0" (click)="Remove(item)" title='{{"button.remove" | translate}}'>
+                                <i class="ion-android-close"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </ba-card>
+    <div class="cg_tieude_contact" *ngIf="edit">
+        <h3>Create/Edit Contact</h3>
+
+    </div>
+    <div class="top-10 col-12 border padding-10" *ngIf="edit">
+        <form [formGroup]="form" (ngSubmit)="Save(form.value)">
+            <div class="form-group row">
+                <label for="inputName3" class="col-2 col-form-label">{{"contactpage.phone"| translate}}:</label>
+
+                <div class="col-10">
+                    <input formControlName="Phone" type="text" maxlength="80" minlength="8" class="form-control" id="inputName3" placeholder='{{"placeholder.phone"| translate}}'>
+                    <label [hidden]="form.controls.Phone.valid" class="text-white col-12 row">{{"error.phone" | translate}}</label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputEmail3" class="col-2 col-form-label">{{"contactpage.address"| translate}}:</label>
+
+                <div class="col-10">
+                    <input formControlName="Address" type="text" class="form-control" id="inputEmail3" placeholder='{{"placeholder.address"| translate}}'>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="open" class="col-2 col-form-label">{{"contactpage.open"| translate}}:</label>
+
+                <div class="col-10">
+                    <ckeditor [formControl]="form.controls.BusinessHours" [config]="config" name="info" debounce="500"></ckeditor>
+                    <small [hidden]="form.controls.BusinessHours.valid" class="text-info col-8 row">{{"contactpage.admin.validateForm.businesshours" | translate}}</small>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="open" class="col-2 col-form-label">GoogleMap:</label>
+
+                <div class="col-10">
+                    <input formControlName="MapUrl" type="text" class="form-control" placeholder='{{"placeholder.gglink"| translate}}'>
+                    <a class="cg_btn_capnhat" href="javascript:;" data-toggle="modal" data-target="#firstModal" (click)="trustSrcUrl(this.form.get(['MapUrl']).value)"
+                        *ngIf="form.controls.MapUrl.valid">{{"button.show"| translate}}</a>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputPassword4" class="col-2 col-form-label">{{"contactpage.image"| translate}}:</label>
+
+                <div class="col-10">
+                    <button type="button" class="btn btn-info btn-sm" (click)="open=true;">{{"modernblogpage.admin.SelectImage"| translate}}</button>
+                    <div *ngIf="this.form.get('ImageId').value > 0">
+                        <img src="{{(this.form.controls['Image'].get('ImageType').value ==0?this.server.urlImage:this.server.urlImage+this.server.imageType[this.form.controls['Image'].get('ImageType').value])+'/'+ this.form.controls['Image'].get('ImageName').value}}"
+                            height="200" width="200" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row" formArrayName="Socials">
+                <label for="email" class="col-2 col-form-label">Socials:</label>
+                <div class="col-10">
+                    <a href="javascript:;" id="UpDateOrInsert" (click)="addSocial(social)" class="cg_btn_add">{{"button.add"| translate}} Socials</a>
+                    <div *ngFor="let social of form.controls.Socials.controls;let i=index" class="panel panel-info bottom-10 top-10">
+                        <div class="panel-heading">
+                            <h3 *ngIf="form.controls.Socials.controls.length > 1" class="text-right" (click)="removeSocial(i)">
+                                <i class="ion-close-round"></i>
+                            </h3>
+                        </div>
+                        <div [formGroupName]="i" class="panel-body">
+                            <div class="col-sm-4 col-xs-12">
+                                <label>{{"social.name"| translate}}</label>
+                                <input type="text" formControlName="SocialName" class="form-control text-black" placeholder='{{"placeholder.name"| translate}}'>
+                                <label [hidden]="form.controls.Socials.controls[i].controls.SocialName.valid" class="text-info">{{"error.socialname" | translate}}</label>
+                            </div>
+                            <div class="col-sm-4 col-xs-12">
+                                <label>{{"social.logo"| translate}}:</label>
+                                <input type="text" formControlName="Logo" class="form-control text-black" placeholder='{{"placeholder.logo"| translate}}'>
+                                <i class="ion-help-circled text-danger" data-toggle="modal" data-target="#secondModal"></i>
+                                <label class="text-left text-info">{{"help"|translate}}</label>
+                                <label [hidden]="form.controls.Socials.controls[i].controls.Logo.valid" class="text-info">{{"error.logo" | translate}}</label>
+                            </div>
+                            <div class="col-sm-4 col-xs-12">
+                                <label>{{"social.link"| translate}}</label>
+                                <input type="text" formControlName="Link" class="form-control text-black" placeholder='{{"placeholder.socialLink"| translate}}'>
+                                <small [hidden]="form.controls.Socials.controls[i].controls.Link.invalid">example: https://www.google.com.vn</small>
+                                <label [hidden]="form.controls.Socials.controls[i].controls.Link.valid" class="text-info">{{"error.sociallink" | translate}}</label>
+                            </div>
+                            <div class="col-12 col-md-12">
+                                <span [hidden]="form.controls.Socials.controls[i].controls.Logo.invalid">Facebook:
+                                    <font color="#40daf1"> icon-facebook fa fa-facebook </font>, Google:
+                                    <font color="#40daf1"> icon-google fa fa-google</font>, Twitter:
+                                    <font color="#40daf1">twitter fa fa-twitter</font>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="button" class="col-2 col-form-label"></label>
+                <div class="col-10">
+                    <button class="cg_btn_capnhat" type="submit" [disabled]="!form.valid">{{"button.save"| translate}}</button>
+                    <button (click)="Cancel();" type="button" class="cg_btn_cancel">{{"button.cancel"| translate}}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="image" [hidden]="!open">
+    <select-image (clicks)="selectImage($event)" (close)="closed($event)"></select-image>
+</div>
+<div class="modal fade" id="firstModal" tabindex="-1" role="dialog" aria-labelledby="firstModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="googlemap">
+                    <div [innerHtml]="content"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade text-54" id="secondModal" tabindex="-1" role="dialog" aria-labelledby="secondModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="secondModal">Icon Social</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="">
+                    <span class="fa fa-facebook col-md-2"></span>
+                    <label> Facebook:
+                        <font class="padding_left_10" color="red"> icon-facebook fa fa-facebook </font>
+                    </label>
+                </div>
+                <div>
+                    <span class="fa fa-google col-md-2"></span>
+                    <label> Google:
+                        <font class="padding_left_10" color="red"> icon-google fa fa-google</font>
+                    </label>
+                </div>
+                <div>
+                    <span class="fa fa-twitter col-md-2"></span>
+                    <label> Twitter:
+                        <font class="padding_left_10" color="red">twitter fa fa-twitter</font>
+                    </label>
+                </div>
+                <div>
+                    <span class="fa fa-skype col-md-2"></span>
+                    <label> Skype:
+                        <font class="padding_left_10" color="red">ion-social-skype</font>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <label class="text-left">{{"help"|translate}}</label>
+            </div>
+        </div>
+    </div>
+</div>
